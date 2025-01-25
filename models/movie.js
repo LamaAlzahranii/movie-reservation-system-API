@@ -1,17 +1,32 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const movieSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  timeSlots: [
-    {
-      time: { type: Date, required: true },
-      capacity: { type: Number, required: true },
-      bookedCount: { type: Number, default: 0 },
-    },
-  ],
+  title: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  actors: [{ type: String, required: true }],
+  releaseDate: {
+    type: Date,
+    required: true,
+  },
+  posterUrl: {
+    type: String,
+    required: true,
+  },
+  featured: {
+    type: Boolean,
+  },
+  bookings: [{ type: mongoose.Types.ObjectId, ref: "Booking" }],
+  admin: {
+    type: mongoose.Types.ObjectId,
+    ref: "Admin",
+    required: true,
+  },
 });
 
-const Movie = mongoose.model("Movie", movieSchema);
-
-module.exports = Movie;
+export default mongoose.model("Movie", movieSchema);
