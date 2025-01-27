@@ -20,6 +20,17 @@ export const newBooking = async (req, res, next) => {
   if (!user) {
     return res.status(404).json({ message: "User not found with given ID " });
   }
+  const existingBooking = await Bookings.findOne({
+    movie,
+    date: new Date(date),
+    seatNumber,
+  });
+
+  if (existingBooking) {
+    return res.status(400).json({ message: "Seat already booked for this date" });
+  }
+
+
   let booking;
 
   try {
