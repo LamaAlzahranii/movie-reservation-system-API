@@ -117,3 +117,37 @@ export const checkAvailability = async (req, res) => {
     res.status(500).json({ message: "Failed to check availability", error })
   }
 }
+
+// في movie-controller.js أو المراقب المعني
+export const reserveTimeSlot = async (req, res) => {
+  try {
+    const { movieId, slotId, numPeople } = req.body;
+
+    // إيجاد الفيلم باستخدام movieId
+    const movie = await Movie.findById(movieId);
+    if (!movie) {
+      return res.status(404).json({ message: "الفيلم غير موجود" });
+    }
+
+    // إيجاد الفترة الزمنية داخل مصفوفة timeSlots في الفيلم باستخدام slotId
+    const slot = movie.timeSlots.id(slotId);
+    if (!slot) {
+      return res.status(404).json({ message: "الفترة الزمنية غير موجودة" });
+    }
+
+    // التحقق من التوفر
+    if (slot.capacity - slot.booked < numPeople) {
+      return res.status(400).json({ message: "لا يوجد سعة كافية" });
+    }
+
+    // تحديث عدد المقاعد المحجوزة
+    slot.booked += numPeople;
+    await movie.save(); // حفظ التغييرات في الفيلم
+
+    return res.status(200).json({ message: "تم الحجز بنجاح", remainingCapacity: slot.capacity - slot.booked });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "حدث خطأ في الخادم" });
+  }
+};
+
