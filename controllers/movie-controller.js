@@ -21,7 +21,7 @@ export const addMovie = async (req, res, next) => {
   });
 
   //create new movie
-  const { title, description, releaseDate, posterUrl, featured, actors } =
+  const { title, description, releaseDate, posterUrl, featured, actors , timeSlots } =
     req.body;
   if (
     !title &&
@@ -41,6 +41,7 @@ export const addMovie = async (req, res, next) => {
       releaseDate: new Date(`${releaseDate}`),
       featured,
       actors,
+      timeSlots, // Add the timeSlots
       admin: adminId,
       posterUrl,
       title,
@@ -93,3 +94,26 @@ export const getMovieById = async (req, res, next) => {
 
   return res.status(200).json({ movie });
 };
+
+export const checkAvailability = async (req, res) => {
+  const { movieId, slotId } = req.params
+
+  try {
+    const movie = await Movie.findById(movieId)
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" })
+    }
+
+    // العثور على الـ time slot المطلوب
+    const slot = movie.timeSlots.id(slotId)
+    if (!slot) {
+      return res.status(404).json({ message: "Time slot not found" })
+    }
+
+    // التحقق من توفر المقاعد
+    const availableSeats = slot.capacity - slot.booked
+    res.status(200).json({ availableSeats })
+  } catch (error) {
+    res.status(500).json({ message: "Failed to check availability", error })
+  }
+}
