@@ -1,4 +1,28 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
+
+
+const TimeSlotSchema = new mongoose.Schema({
+  time: {
+    type: String,
+    required: true,
+  },
+  capacity: {
+    type: Number,
+    required: true,
+  },
+  booked: {
+    type: Number,
+    default: 0,
+    validate: {
+      validator: function (v) {
+        return v <= this.capacity; // Ensure booked doesn't exceed capacity
+      },
+      message: 'Booked seats cannot exceed capacity',
+    },
+  },
+});
+
+
 
 const movieSchema = new mongoose.Schema({
   title: {
@@ -21,12 +45,15 @@ const movieSchema = new mongoose.Schema({
   featured: {
     type: Boolean,
   },
+
   bookings: [{ type: mongoose.Types.ObjectId, ref: "Booking" }],
+  timeSlots: [TimeSlotSchema],
   admin: {
     type: mongoose.Types.ObjectId,
     ref: "Admin",
     required: true,
   },
-});
+})
 
-export default mongoose.model("Movie", movieSchema);
+
+export default mongoose.model("Movie", movieSchema)
