@@ -1,3 +1,6 @@
+
+
+
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import Admin from "../models/Admin.js";
@@ -10,7 +13,6 @@ export const addMovie = async (req, res, next) => {
 
   let adminId;
 
-  // verify token
   jwt.verify(extractedToken, process.env.SECRET_KEY, (err, decrypted) => {
     if (err) {
       return res.status(400).json({ message: `${err.message}` });
@@ -20,7 +22,6 @@ export const addMovie = async (req, res, next) => {
     }
   });
 
-  //create new movie
   const { title, description, releaseDate, posterUrl, featured, actors , timeSlots } =
     req.body;
   if (
@@ -41,7 +42,7 @@ export const addMovie = async (req, res, next) => {
       releaseDate: new Date(`${releaseDate}`),
       featured,
       actors,
-      timeSlots, // Add the timeSlots
+      timeSlots, 
       admin: adminId,
       posterUrl,
       title,
@@ -95,41 +96,17 @@ export const getMovieById = async (req, res, next) => {
   return res.status(200).json({ movie });
 };
 
-export const checkAvailability = async (req, res) => {
-  const { movieId, slotId } = req.params
 
-  try {
-    const movie = await Movie.findById(movieId)
-    if (!movie) {
-      return res.status(404).json({ message: "Movie not found" })
-    }
 
-    // العثور على الـ time slot المطلوب
-    const slot = movie.timeSlots.id(slotId)
-    if (!slot) {
-      return res.status(404).json({ message: "Time slot not found" })
-    }
-
-    // التحقق من توفر المقاعد
-    const availableSeats = slot.capacity - slot.booked
-    res.status(200).json({ availableSeats })
-  } catch (error) {
-    res.status(500).json({ message: "Failed to check availability", error })
-  }
-}
-
-// في movie-controller.js أو المراقب المعني
 export const reserveTimeSlot = async (req, res) => {
   try {
     const { movieId, slotId, numPeople } = req.body;
 
-    // إيجاد الفيلم باستخدام movieId
     const movie = await Movie.findById(movieId);
     if (!movie) {
       return res.status(404).json({ message: "الفيلم غير موجود" });
     }
 
-    // إيجاد الفترة الزمنية داخل مصفوفة timeSlots في الفيلم باستخدام slotId
     const slot = movie.timeSlots.id(slotId);
     if (!slot) {
       return res.status(404).json({ message: "الفترة الزمنية غير موجودة" });
@@ -140,9 +117,8 @@ export const reserveTimeSlot = async (req, res) => {
       return res.status(400).json({ message: "لا يوجد سعة كافية" });
     }
 
-    // تحديث عدد المقاعد المحجوزة
     slot.booked += numPeople;
-    await movie.save(); // حفظ التغييرات في الفيلم
+    await movie.save(); 
 
     return res.status(200).json({ message: "تم الحجز بنجاح", remainingCapacity: slot.capacity - slot.booked });
   } catch (error) {
@@ -150,4 +126,29 @@ export const reserveTimeSlot = async (req, res) => {
     return res.status(500).json({ message: "حدث خطأ في الخادم" });
   }
 };
+
+export const checkAvailability = async (req, res) => {
+  const { movieId, timeSlotId } = req.params;
+
+  try {
+    const movie = await Movie.findById(movieId);
+
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+
+    const timeSlot = movie.timeSlots.find((slot) => slot._id.toString() === timeSlotId);
+
+    if (!timeSlot) {
+      return res.status(404).json({ message: "Time slot not found" });
+    }
+
+    return res.status(200).json({ availableSeats: timeSlot.capacity - timeSlot.booked });
+  } catch (err) {
+    return res.status(500).json({ message: "Error checking availability" });
+  }
+};
+
+
+
 

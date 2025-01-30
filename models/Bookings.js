@@ -10,6 +10,11 @@ const bookingSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  timeSlot: {
+    type: mongoose.Types.ObjectId,
+    ref: "TimeSlot",  
+    required: true,
+  },
   seatNumber: {
     type: Number,
     required: true,
