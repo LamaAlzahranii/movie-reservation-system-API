@@ -45,6 +45,7 @@ export const newBooking = async (req, res) => {
       timeSlot,
       movie: movieId,
       user: userId,
+      movieDate: movie.date, 
     })
 
     await booking.save()
@@ -59,7 +60,7 @@ export const getBookingById = async (req, res, next) => {
   const id = req.params.id
   let booking
   try {
-    booking = await Bookings.findById(id).populate("user movie timeSlot") 
+    booking = await Bookings.findById(id).populate("user movie timeSlot")
   } catch (err) {
     return console.log(err)
   }

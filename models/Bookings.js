@@ -20,6 +20,10 @@ const bookingSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  movieDate: {
+    type: Date,
+    required: true
+  }
 })
 
 export default mongoose.model("Booking", bookingSchema)
