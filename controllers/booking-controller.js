@@ -7,7 +7,7 @@ export const newBooking = async (req, res) => {
   const { seatNumber, timeSlot, movieId, userId } = req.body
 
   if (!seatNumber || !timeSlot || !movieId || !userId) {
-    return res.status(400).json({ message: "الرجاء ملء جميع الحقول" })
+    return res.status(400).json({ message: "Kindly fill in all the fields" })
   }
 
   try {
@@ -15,12 +15,12 @@ export const newBooking = async (req, res) => {
 
     const movie = await Movie.findById(movieObjectId)
     if (!movie) {
-      return res.status(404).json({ message: "الفيلم غير موجود" })
+      return res.status(404).json({ message: "The movie is not available" })
     }
 
     const slot = movie.timeSlots.find(s => s._id.toString() === timeSlot)
     if (!slot) {
-      return res.status(404).json({ message: "وقت العرض غير متاح" })
+      return res.status(404).json({ message: "The showtime is not available" })
     }
 
     const existingBooking = await Booking.findOne({
@@ -30,11 +30,11 @@ export const newBooking = async (req, res) => {
     })
 
     if (existingBooking) {
-      return res.status(400).json({ message: "المقعد محجوز بالفعل. اختر مقعد آخر" })
+      return res.status(400).json({ message: "The seat is already reserved. Please choose another seat" })
     }
 
     if (slot.booked >= slot.capacity) {
-      return res.status(400).json({ message: "لا يوجد مقاعد متاحة" })
+      return res.status(400).json({ message: "No seats available" })
     }
 
     slot.booked += 1
@@ -48,10 +48,10 @@ export const newBooking = async (req, res) => {
     })
 
     await booking.save()
-    res.status(201).json({ message: "تم الحجز بنجاح!" })
+    res.status(201).json({ message: "Reservation successful!" })
   } catch (err) {
     console.error("Booking error:", err)
-    res.status(500).json({ message: "حدث خطأ أثناء الحجز" })
+    res.status(500).json({ message: "An error occurred during the reservation" })
   }
 }
 
@@ -59,7 +59,7 @@ export const getBookingById = async (req, res, next) => {
   const id = req.params.id
   let booking
   try {
-    booking = await Bookings.findById(id).populate("user movie timeSlot") // إضافة timeSlot للـ populate
+    booking = await Bookings.findById(id).populate("user movie timeSlot") 
   } catch (err) {
     return console.log(err)
   }
