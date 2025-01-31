@@ -23,7 +23,6 @@ export const newBooking = async (req, res) => {
       return res.status(404).json({ message: "وقت العرض غير متاح" })
     }
 
-    // التحقق من إذا كان المقعد قد تم حجزه بالفعل
     const existingBooking = await Booking.findOne({
       movie: movieId,
       timeSlot: timeSlot,

@@ -14,7 +14,7 @@ const TimeSlotSchema = new mongoose.Schema({
     default: 0,
     validate: {
       validator: function (v) {
-        return v <= this.capacity // Ensure booked doesn't exceed capacity
+        return v <= this.capacity 
       },
       message: "Booked seats cannot exceed capacity",
     },
@@ -56,4 +56,4 @@ const movieSchema = new mongoose.Schema({
   },
 })
 
-export default mongoose.models.Movie || mongoose.model("Movie", movieSchema);
+export default mongoose.models.Movie || mongoose.model("Movie", movieSchema)
