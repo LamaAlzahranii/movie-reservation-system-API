@@ -1,6 +1,5 @@
 import mongoose from "mongoose"
 
-
 const TimeSlotSchema = new mongoose.Schema({
   time: {
     type: String,
@@ -15,14 +14,12 @@ const TimeSlotSchema = new mongoose.Schema({
     default: 0,
     validate: {
       validator: function (v) {
-        return v <= this.capacity; // Ensure booked doesn't exceed capacity
+        return v <= this.capacity // Ensure booked doesn't exceed capacity
       },
-      message: 'Booked seats cannot exceed capacity',
+      message: "Booked seats cannot exceed capacity",
     },
   },
-});
-
-
+})
 
 const movieSchema = new mongoose.Schema({
   title: {
@@ -45,6 +42,10 @@ const movieSchema = new mongoose.Schema({
   featured: {
     type: Boolean,
   },
+  date: {
+    type: Date,
+    required: true,
+  },
 
   bookings: [{ type: mongoose.Types.ObjectId, ref: "Booking" }],
   timeSlots: [TimeSlotSchema],
@@ -55,5 +56,4 @@ const movieSchema = new mongoose.Schema({
   },
 })
 
-
-export default mongoose.model("Movie", movieSchema)
+export default mongoose.models.Movie || mongoose.model("Movie", movieSchema);

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
 const bookingSchema = new mongoose.Schema({
   movie: {
@@ -6,13 +6,9 @@ const bookingSchema = new mongoose.Schema({
     ref: "Movie",
     required: true,
   },
-  date: {
-    type: Date,
-    required: true,
-  },
   timeSlot: {
     type: mongoose.Types.ObjectId,
-    ref: "TimeSlot",  
+    ref: "TimeSlot",
     required: true,
   },
   seatNumber: {
@@ -24,6 +20,6 @@ const bookingSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-});
+})
 
-export default mongoose.model("Booking", bookingSchema);
+export default mongoose.model("Booking", bookingSchema)
